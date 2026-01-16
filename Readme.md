@@ -27,71 +27,39 @@
 
 ---
 
-## 🏗️ Architecture
+## 📸 Screenshots
 
-```mermaid
-flowchart TB
-    subgraph Developer["👨‍💻 Developer"]
-        A[Local Code] -->|git push| B[GitHub Repository]
-    end
-    
-    subgraph GitHub["⚙️ GitHub Actions"]
-        B -->|Trigger| C[CI/CD Pipeline]
-        C -->|SSH + SCP| D[Deploy to EC2]
-    end
-    
-    subgraph AWS["☁️ AWS Cloud"]
-        subgraph EC2["🖥️ EC2 Instance"]
-            E[Flask App]
-            F[Gunicorn Server]
-        end
-        
-        G[(S3 Bucket)]
-        H[IAM Role]
-        
-        H -->|Permissions| E
-        E <-->|Upload/Download| G
-        F --> E
-    end
-    
-    subgraph Users["👥 Users"]
-        I[Browser] -->|HTTP :8000| F
-        I <-.->|Presigned URL| G
-    end
-    
-    D --> EC2
-    
-    style Developer fill:#e1f5fe
-    style GitHub fill:#fff3e0
-    style AWS fill:#fff8e1
-    style Users fill:#e8f5e9
-```
+| Upload Page                                             | File List                                             | 
+|---------------------------------------------------------|-------------------------------------------------------|
+| ![Upload](screenshots/upload.png)                       | ![Files](screenshots/files.png)                       | 
+
+> 💡 **To add screenshots:** Create a `screenshots` folder and add `upload.png`, `files.png`, `success.png`
 
 ---
 
-## 📦 Request Flow
+## 🏗️ Architecture
 
-```mermaid
-sequenceDiagram
-    participant U as 👤 User
-    participant F as 🌐 Flask App
-    participant S3 as 📦 S3 Bucket
-    
-    Note over U,S3: File Upload Flow
-    U->>F: POST /upload (file)
-    F->>S3: upload_fileobj()
-    S3-->>F: Success
-    F->>S3: generate_presigned_url()
-    S3-->>F: Signed URL (1hr)
-    F-->>U: Success page + Download link
-    
-    Note over U,S3: File Download Flow
-    U->>F: GET /files
-    F->>S3: list_objects_v2()
-    S3-->>F: File list
-    F-->>U: Files page with presigned URLs
-    U->>S3: Direct download via Presigned URL
 ```
+┌──────────┐      ┌─────────────────────────────────────────┐
+│          │      │              AWS Cloud                  │
+│   User   │      │  ┌─────────────┐      ┌─────────────┐   │
+│ (Browser)│─────▶│  │  EC2        │      │     S3      │   │
+│          │ :8000│  │  ┌────────┐ │      │   Bucket    │   │
+└──────────┘      │  │  │ Flask  │─┼─────▶│  (Storage)  │   │
+                  │  │  │  App   │ │      │             │   │
+                  │  │  └────────┘ │      └─────────────┘   │
+                  │  │             │             │          │
+                  │  │  IAM Role ──┼─────────────┘          │
+                  │  │ (S3 Access) │      (Permissions)     │
+                  │  └─────────────┘                        │
+                  └─────────────────────────────────────────┘
+```
+
+### How It Works
+1. **User** uploads/downloads files via browser on port `8000`
+2. **Flask App** (on EC2) handles requests using Gunicorn
+3. **S3 Bucket** stores files securely
+4. **IAM Role** gives Flask app permission to access S3 (no keys needed)
 
 ---
 
@@ -137,21 +105,13 @@ Go to **Repository → Settings → Secrets → Actions** and add:
 
 ## 🚀 CI/CD Pipeline
 
-```mermaid
-flowchart LR
-    A[📝 Push to main] --> B[🔄 GitHub Actions]
-    B --> C[📦 Checkout Code]
-    C --> D[🔑 Setup SSH]
-    D --> E[📤 SCP to EC2]
-    E --> F[📥 Install pip3]
-    F --> G[📚 Install Dependencies]
-    G --> H[⚙️ Create .env]
-    H --> I[🛠️ Setup systemd]
-    I --> J[🚀 Restart Service]
-    J --> K[✅ App Live!]
-    
-    style A fill:#c8e6c9
-    style K fill:#a5d6a7
+```
+┌─────────────┐      ┌─────────────────┐      ┌─────────────┐
+│  Developer  │      │  GitHub Actions │      │    EC2      │
+│             │      │                 │      │             │
+│  git push   │─────▶│  Build & Deploy │─────▶│  App Live!  │
+│  to main    │      │                 │      │             │
+└─────────────┘      └─────────────────┘      └─────────────┘
 ```
 
 ### What Happens on `git push`:
