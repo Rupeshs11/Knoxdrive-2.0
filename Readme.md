@@ -1,78 +1,50 @@
-# 🚀 KnoxDrive – Enhanced S3 Storage with CloudFront & CI/CD
+# 🚀 KnoxDrive – Secure S3 Storage
 
-KnoxDrive is a modern web app built with Python Flask that lets you upload and manage files in AWS S3 securely, delivered via CloudFront CDN.
-
-This enhanced version features **Infrastructure as Code (IaC)** and an automated **CI/CD pipeline**.
+KnoxDrive is a modern web app built with Python Flask that lets you upload and manage files in AWS S3 securely.
 
 ## 🌟 Features
+- **Modern UI**: Glassmorphism design with drag-and-drop.
+- **File Management**: List, download, and delete files.
+- **Secure**: Uses S3 Presigned URLs and IAM Roles.
+- **CI/CD**: Automated deployment to EC2 on push to main.
 
-- **Modern UI**: Glassmorphism design with drag-and-drop uploads.
-- **File Management**: List, download (via presigned URLs), and delete files.
-- **CloudFront CDN**: Fast global delivery of your files.
-- **Automated Infrastructure**: One-click deployment using AWS CloudFormation.
-- **CI/CD**: Automated infrastructure updates via GitHub Actions.
+## 🛠️ Manual AWS Setup
 
-## 🌩️ 1. AWS Setup (Automated)
+To deploy this app, you need to manually set up these resources in AWS:
 
-Instead of manual setup, we use CloudFormation:
+### 1. S3 Bucket
+- Create a private S3 bucket (e.g., `my-knoxdrive-storage`).
+- Block all public access.
 
-1. **Create IAM User**:
-   - Go to IAM → Users → Create user (e.g., `knoxdrive-admin`).
-   - Attach policy: `AdministratorAccess` (for initial setup) or specific permissions for S3, CloudFront, and CloudFormation.
-   - Create Access Key for **"Third-party service"** (GitHub Actions).
+### 2. IAM Role for EC2
+- Create an IAM Role for **EC2**.
+- Attach the policy: `AmazonS3FullAccess`.
+- Name it (e.g., `KnoxDrive-EC2-Role`).
 
-2. **Configure GitHub Secrets**:
-   In your GitHub Repo → Settings → Secrets and variables → Actions, add:
-   - `AWS_ACCESS_KEY_ID`
-   - `AWS_SECRET_ACCESS_KEY`
-   - `AWS_REGION` (e.g., `ap-south-1`)
+### 3. EC2 Instance
+- Launch an instance (Amazon Linux 2023, t2.micro).
+- **IAM Instance Profile**: Select the role you created above.
+- **Security Group**: Allow **HTTP (80)** and **SSH (22)**.
+- **Key Pair**: Create/use a `.pem` key for SSH.
 
-3. **Deploy**:
-   Pushing to the `main` branch will automatically trigger the GitHub Action to deploy the `cloudformation.yaml` stack.
+## 🚀 CI/CD Setup (GitHub)
 
-## 📦 2. Local Development
+1. **GitHub Secrets**: Add these to your repo (`Settings > Secrets > Actions`):
+   - `EC2_SSH_KEY`: Content of your `.pem` file.
+   - `EC2_PUBLIC_IP`: Public IP of your EC2.
+   - `S3_BUCKET_NAME`: Name of your S3 bucket.
+   - `AWS_REGION`: e.g., `ap-south-1`.
 
-### Installation
-```bash
-git clone https://github.com/your-username/knoxdrive.git
-cd knoxdrive
-pip install -r requirements.txt
-```
+2. **Deploy**:
+   - Push your code to the `main` branch.
+   - GitHub Actions will automatically deploy the code to `/home/ec2-user/app` and start the service.
 
-### Environment Variables (`.env`)
-Create a `.env` file:
-```env
-AWS_ACCESS_KEY_ID=your-access-key
-AWS_SECRET_ACCESS_KEY=your-secret-key
-AWS_REGION=ap-south-1
-S3_BUCKET=knoxdrive-storage-youraccountid
-CLOUDFRONT_DOMAIN=your-distribution-id.cloudfront.net (Optional)
-```
+## 📦 Local Development
+1. Clone the repo.
+2. Create a `.env` file with your local AWS keys.
+3. Run `pip install -r requirements.txt`.
+4. Run `python app.py`.
 
-### Run
-```bash
-python app.py
-```
-
-## 📁 Project Structure
-```
-knoxdrive/
-├── .github/workflows/
-│   └── deploy.yml          # CI/CD Pipeline
-├── templates/
-│   ├── index.html          # Upload UI
-│   ├── files.html          # File List UI
-│   └── success.html        # Success UI
-├── app.py                  # Flask Backend
-├── cloudformation.yaml     # Infrastructure as Code
-├── requirements.txt        # Dependencies
-└── README.md
-```
-
-## 🔒 Security
-- **OAC (Origin Access Control)**: S3 bucket is private; only CloudFront can access it.
-- **Presigned URLs**: Secure, time-limited download links.
-- **Least Privilege**: IAM roles are scoped to specific resources.
-
-## 👨‍💻 Author
-**Knox (Rupesh)**
+## � Security
+- **IAM Roles**: The EC2 instance uses a role to access S3, so no AWS keys are stored on the server.
+- **Presigned URLs**: Files are kept private; download links expire after 1 hour.

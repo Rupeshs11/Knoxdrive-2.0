@@ -1,40 +1,12 @@
-name: KnoxDrive CI/CD
+name: KnoxDrive Code Deployment
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  deploy-infrastructure:
-    name: Deploy AWS Infrastructure
-    runs-on: ubuntu-latest
-    outputs:
-      ec2_public_ip: ${{ steps.deploy-stack.outputs.EC2PublicIP }}
-      s3_bucket: ${{ steps.deploy-stack.outputs.S3BucketName }}
-      cloudfront_domain: ${{ steps.deploy-stack.outputs.CloudFrontDomainName }}
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: Deploy CloudFormation Stack
-        id: deploy-stack
-        uses: aws-actions/aws-cloudformation-github-deploy@v1
-        with:
-          name: knoxdrive-stack
-          template: cloudformation.yaml
-          no-fail-on-empty-changeset: "1"
-          parameter-overrides: "KeyName=${{ secrets.AWS_KEY_PAIR_NAME }}"
-
-  deploy-app:
-    name: Deploy Application to EC2
-    needs: deploy-infrastructure
+  deploy:
+    name: Deploy to EC2
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -45,22 +17,26 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ needs.deploy-infrastructure.outputs.ec2_public_ip }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.EC2_PUBLIC_IP }} >> ~/.ssh/known_hosts
 
       - name: Deploy to EC2
         run: |
-          scp -r ./* ec2-user@${{ needs.deploy-infrastructure.outputs.ec2_public_ip }}:/home/ec2-user/app/
-          ssh ec2-user@${{ needs.deploy-infrastructure.outputs.ec2_public_ip }} << EOF
+          # Copy code to EC2
+          scp -r ./* ec2-user@${{ secrets.EC2_PUBLIC_IP }}:/home/ec2-user/app/
+          
+          # Run setup commands on EC2
+          ssh ec2-user@${{ secrets.EC2_PUBLIC_IP }} << EOF
             cd /home/ec2-user/app
             
-            # Create .env file with infrastructure outputs
-            # Note: AWS_ACCESS_KEY_ID and SECRET are NOT needed because of IAM Role
-            echo "S3_BUCKET=${{ needs.deploy-infrastructure.outputs.s3_bucket }}" > .env
+            # Create/Update .env file
+            echo "S3_BUCKET=${{ secrets.S3_BUCKET_NAME }}" > .env
             echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> .env
-            echo "CLOUDFRONT_DOMAIN=${{ needs.deploy-infrastructure.outputs.cloudfront_domain }}" >> .env
+            # Optional: echo "CLOUDFRONT_DOMAIN=${{ secrets.CLOUDFRONT_DOMAIN }}" >> .env
             
+            # Install dependencies
             pip3 install -r requirements.txt
-            # Create a simple systemd service for the app
+            
+            # Create/Update systemd service
             sudo bash -c 'cat > /etc/systemd/system/knoxdrive.service << EOL
             [Unit]
             Description=Gunicorn instance to serve KnoxDrive
@@ -76,6 +52,7 @@ jobs:
             [Install]
             WantedBy=multi-user.target
             EOL'
+            
             sudo systemctl daemon-reload
             sudo systemctl restart knoxdrive
             sudo systemctl enable knoxdrive
