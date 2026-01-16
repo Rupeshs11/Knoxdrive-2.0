@@ -33,6 +33,9 @@ jobs:
             echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> .env
             # Optional: echo "CLOUDFRONT_DOMAIN=${{ secrets.CLOUDFRONT_DOMAIN }}" >> .env
             
+            # Install pip if not present (for fresh EC2)
+            sudo dnf install python3-pip -y || sudo yum install python3-pip -y
+            
             # Install dependencies
             pip3 install -r requirements.txt
             
