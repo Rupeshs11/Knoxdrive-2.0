@@ -2,8 +2,9 @@
 
 <div align="center">
 <img src="https://skillicons.dev/icons?i=python,flask,aws,gitubaction&theme=dark" />
-![GitHub Actions](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)
 </div>
+![GitHub Actions](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)
+
 <div align="center">
 **A modern, secure file storage solution powered by AWS S3 with automated CI/CD deployment.**
 
