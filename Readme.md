@@ -2,14 +2,9 @@
 
 <div align="center">
 <img src="https://skillicons.dev/icons?i=python,flask,aws,gitubaction&theme=dark" />
+![GitHub Actions](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)
 </div>
 <div align="center">
-
-![Python](https://img.shields.io/badge/Python-3.9+-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![Flask](https://img.shields.io/badge/Flask-2.0+-000000?style=for-the-badge&logo=flask&logoColor=white)
-![AWS](https://img.shields.io/badge/AWS-S3%20|%20EC2%20|%20IAM-FF9900?style=for-the-badge&logo=amazon-aws&logoColor=white)
-![GitHub Actions](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)
-
 **A modern, secure file storage solution powered by AWS S3 with automated CI/CD deployment.**
 
 [Features](#-features) • [Architecture](#-architecture) • [Setup](#-setup) • [Deployment](#-cicd-pipeline) • [Security](#-security)
@@ -17,26 +12,11 @@
 </div>
 
 ---
-
-## ✨ Features
-
-| Feature                | Description                                      |
-|------------------------|--------------------------------------------------|
-| 🎨 **Modern UI**       | Glassmorphism design with drag-and-drop upload   |
-| 📁 **File Management** | Upload, list, download, and delete files easily  |
-| 🔒 **Secure Access**   | Presigned URLs with 1-hour expiration            |
-| 🚀 **Auto Deploy**     | Push to `main` → Auto-deployed to EC2            |
-| ☁️ **Cloud Native**    | Built for AWS with IAM role-based security       |
-
----
-
 ## 📸 Screenshots
 
 | Upload Page                                             | File List                                             | 
 |---------------------------------------------------------|-------------------------------------------------------|
 | ![Upload](screenshots/upload.png)                       | ![Files](screenshots/files.png)                       | 
-
-> 💡 **To add screenshots:** Create a `screenshots` folder and add `upload.png`, `files.png`, `success.png`
 
 ---
 
@@ -153,17 +133,6 @@ Access at: **http://localhost:5000**
 
 ---
 
-## 🔒 Security
-
-| Layer             | Protection                            |
-|-------------------|---------------------------------------|
-| **Credentials**   | IAM Roles (no keys on server)         |
-| **File Access**   | Presigned URLs (expire in 1 hour)     |
-| **S3 Bucket**     | Private (no public access)            |
-| **Network**       | Security Group (only ports 22, 8000)  |
-
----
-
 ## 📁 Project Structure
 
 ```
@@ -193,6 +162,17 @@ If you delete your EC2 and need to start fresh:
 5. **Push any commit** → Auto-deploys!
 
 > 💡 **Note:** pip3, dependencies, and the service are all set up automatically by the pipeline!
+
+---
+## ✨ Features
+
+| Feature                | Description                                      |
+|------------------------|--------------------------------------------------|
+| 🎨 **Modern UI**       | Glassmorphism design with drag-and-drop upload   |
+| 📁 **File Management** | Upload, list, download, and delete files easily  |
+| 🔒 **Secure Access**   | Presigned URLs with 1-hour expiration            |
+| 🚀 **Auto Deploy**     | Push to `main` → Auto-deployed to EC2            |
+| ☁️ **Cloud Native**    | Built for AWS with IAM role-based security       |
 
 ---
 
