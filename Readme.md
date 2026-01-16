@@ -1,7 +1,7 @@
 # � KnoxDrive – Secure Cloud Storage
 
 <div align="center">
-<img src="https://skillicons.dev/icons?i=python,flask,aws,gitubaction&theme=dark" />
+<img src="https://skillicons.dev/icons?i=python,flask,aws,githubactions&theme=dark" />
 </div>
 <div align="center">
 **A modern, secure file storage solution powered by AWS S3 with automated CI/CD deployment.**
