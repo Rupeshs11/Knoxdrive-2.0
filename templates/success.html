@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Successful – KnoxDrive</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            font-family: 'Inter', sans-serif;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .success-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 50px 40px;
+            backdrop-filter: blur(10px);
+            box-shadow:
+                0 25px 50px rgba(0, 0, 0, 0.3),
+                0 0 100px rgba(0, 255, 231, 0.05);
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: block;
+            animation: bounce 0.6s ease;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+        }
+
+        .success-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #00ffe7 0%, #0080ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        .success-message {
+            color: #aaa;
+            font-size: 1rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .file-name {
+            color: #00ffe7;
+            font-weight: 500;
+        }
+
+        .url-container {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 255, 231, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .url-text {
+            flex: 1;
+            text-align: left;
+            font-size: 0.85rem;
+            color: #888;
+            word-break: break-all;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .copy-btn {
+            background: rgba(0, 255, 231, 0.1);
+            border: 1px solid rgba(0, 255, 231, 0.3);
+            color: #00ffe7;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .copy-btn:hover {
+            background: rgba(0, 255, 231, 0.2);
+        }
+
+        .copy-btn.copied {
+            background: rgba(0, 255, 231, 0.3);
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00ffe7 0%, #00b4d8 100%);
+            border: none;
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 255, 231, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .footer {
+            margin-top: 40px;
+            color: #555;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 480px) {
+            .success-card {
+                padding: 35px 25px;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="success-card">
+            <span class="success-icon">✅</span>
+            <h1 class="success-title">Upload Complete!</h1>
+            <p class="success-message">
+                Your file <span class="file-name">{{ filename }}</span> has been successfully uploaded to AWS S3.
+            </p>
+
+            {% if file_url %}
+            <div class="url-container">
+                <span class="url-text" id="fileUrl">{{ file_url }}</span>
+                <button class="copy-btn" id="copyBtn" onclick="copyUrl()">📋 Copy</button>
+            </div>
+            {% endif %}
+
+            <div class="actions">
+                <a href="/" class="btn btn-primary">
+                    <span>⬆️</span> Upload Another
+                </a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🚀 KnoxDrive – Secure Cloud Storage</p>
+        </div>
+    </div>
+
+    <script>
+        function copyUrl() {
+            const url = document.getElementById('fileUrl').textContent;
+            navigator.clipboard.writeText(url).then(() => {
+                const btn = document.getElementById('copyBtn');
+                btn.textContent = '✓ Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = '📋 Copy';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+
+</html>
