@@ -1,7 +1,7 @@
 # � KnoxDrive – Secure Cloud Storage
 
 <div align="center">
-<img src="https://skillicons.dev/icons?i=python,flask,aws,gitub action&theme=dark" />
+<img src="https://skillicons.dev/icons?i=python,flask,aws,gitubaction&theme=dark" />
 </div>
 <div align="center">
 
