@@ -26,19 +26,33 @@ print("------------------------------")
 from botocore.config import Config
 
 try:
-    # Explicitly set endpoint_url for the region to avoid any ambiguity
-    endpoint_url = f"https://s3.{region}.amazonaws.com"
-    s3 = boto3.client(
-        's3',
-        aws_access_key_id=aws_access_key_id,
-        aws_secret_access_key=aws_secret_access_key,
-        region_name=region,
-        endpoint_url=endpoint_url,
-        config=Config(
-            signature_version='s3v4',
-            s3={'addressing_style': 'virtual'}
+    # If credentials are provided, use them; otherwise, let boto3 use IAM role
+    if aws_access_key_id and aws_secret_access_key:
+        # Use explicit credentials (for local development)
+        endpoint_url = f"https://s3.{region}.amazonaws.com"
+        s3 = boto3.client(
+            's3',
+            aws_access_key_id=aws_access_key_id,
+            aws_secret_access_key=aws_secret_access_key,
+            region_name=region,
+            endpoint_url=endpoint_url,
+            config=Config(
+                signature_version='s3v4',
+                s3={'addressing_style': 'virtual'}
+            )
         )
-    )
+        print("Using explicit AWS credentials from .env")
+    else:
+        # Use IAM role credentials (for EC2)
+        s3 = boto3.client(
+            's3',
+            region_name=region,
+            config=Config(
+                signature_version='s3v4',
+                s3={'addressing_style': 'virtual'}
+            )
+        )
+        print("Using IAM role credentials (no explicit keys)")
 except Exception as e:
     print(f"Error initializing S3 client: {e}")
     s3 = None
