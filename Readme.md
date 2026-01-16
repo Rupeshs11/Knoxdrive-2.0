@@ -1,6 +1,9 @@
 # � KnoxDrive – Secure Cloud Storage
 
 <div align="center">
+<img src="https://skillicons.dev/icons?i=python,flask,aws,gitub action&theme=dark" />
+</div>
+<div align="center">
 
 ![Python](https://img.shields.io/badge/Python-3.9+-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Flask](https://img.shields.io/badge/Flask-2.0+-000000?style=for-the-badge&logo=flask&logoColor=white)
