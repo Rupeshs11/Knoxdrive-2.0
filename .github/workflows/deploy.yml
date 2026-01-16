@@ -47,7 +47,7 @@ jobs:
             Group=ec2-user
             WorkingDirectory=/home/ec2-user/app
             Environment="PATH=/home/ec2-user/.local/bin:/usr/bin"
-            ExecStart=/usr/local/bin/gunicorn --workers 3 --bind 0.0.0.0:80 app:app
+            ExecStart=/home/ec2-user/.local/bin/gunicorn --workers 3 --bind 0.0.0.0:8000 app:app
 
             [Install]
             WantedBy=multi-user.target
